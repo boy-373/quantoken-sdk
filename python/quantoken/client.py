@@ -34,6 +34,35 @@ class QuantumTokenClient:
         r.raise_for_status()
         return r.json()
 
+
+    def chat(
+        self,
+        messages: list,
+        model: str = "qwen-flash",
+        max_tokens: int = 512,
+        temperature: Optional[float] = None,
+        top_p: Optional[float] = None,
+        stop=None,
+        request_id: Optional[str] = None,
+    ) -> dict:
+        """POST /api/v1/open/chat/completions (OpenAI compatible).
+
+        Returns a standard OpenAI Chat Completion dict.
+        Tiers (credits/call): qwen-flash=1, qwen-turbo=2, qwen-plus=5.
+        """
+        payload: dict = {"model": model, "messages": messages, "max_tokens": max_tokens}
+        if temperature is not None:
+            payload["temperature"] = temperature
+        if top_p is not None:
+            payload["top_p"] = top_p
+        if stop is not None:
+            payload["stop"] = stop
+        if request_id is not None:
+            payload["request_id"] = request_id
+        r = self.session.post(self._url("/api/v1/open/chat/completions"), json=payload)
+        r.raise_for_status()
+        return r.json()
+
     def openapi_schema(self) -> dict:
         """Fetch the OpenAPI 3.1 schema."""
         r = self.session.get(self._url("/openapi.json"))

@@ -5,7 +5,7 @@ Official Python & Node.js SDK / examples for [QuantumToken (奇物匣)](https://
 ## What is QuantumToken?
 
 - One account, multiple apps, each app gets a long-lived `X-API-Key`.
-- Unified credit wallet: **1 CNY = 100 credits = 100 API calls** (default tier).
+- Unified credit wallet: **1 CNY = 100 credits**. AI chat is billed per model tier.
 - Simple REST endpoints for quota query and per-call deduction.
 
 Landing (EN): https://trade.pianam.cn/landing/en/  
@@ -38,6 +38,36 @@ node examples/query_balance.js
 |---|---|---|---|
 | `/api/v1/open/quota` | GET | `X-API-Key` | Query remaining credits |
 | `/api/v1/open/quota/consume` | POST | `X-API-Key` | Deduct credits once |
+| `/api/v1/open/chat/completions` | POST | `X-API-Key` | **AI chat (OpenAI compatible)** |
+
+## AI chat (OpenAI compatible)
+
+Point the official `openai` SDK at QuantumToken by changing `base_url`, or use the built-in helper:
+
+```python
+from quantoken import QuantumTokenClient
+
+client = QuantumTokenClient(api_key="YOUR_KEY")
+resp = client.chat(
+    messages=[{"role": "user", "content": "Explain quantum computing in one sentence"}],
+    model="qwen-flash",   # 1 credit
+)
+print(resp["choices"][0]["message"]["content"])
+```
+
+With the official OpenAI SDK:
+
+```python
+from openai import OpenAI
+client = OpenAI(api_key="YOUR_KEY", base_url="https://trade.pianam.cn/api/v1/open")
+resp = client.chat.completions.create(
+    model="qwen-flash",
+    messages=[{"role": "user", "content": "Hello"}],
+)
+```
+
+Model tiers (credits/call): `qwen-flash` = 1, `qwen-turbo` = 2, `qwen-plus` = 5.
+Credits are pre-charged and auto-refunded if the upstream call fails; `request_id` provides idempotent retries. Streaming is not supported yet.
 
 ## Usage example
 

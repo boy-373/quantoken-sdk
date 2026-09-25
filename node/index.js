@@ -36,6 +36,30 @@ class QuantumTokenClient {
     });
   }
 
+  /**
+   * POST /api/v1/open/chat/completions (OpenAI compatible).
+   * Returns a standard OpenAI Chat Completion object.
+   * Tiers (credits/call): qwen-flash=1, qwen-turbo=2, qwen-plus=5.
+   */
+  async chat(messages, {
+    model = "qwen-flash",
+    maxTokens = 512,
+    temperature,
+    topP,
+    stop,
+    requestId,
+  } = {}) {
+    const payload = { model, messages, max_tokens: maxTokens };
+    if (temperature !== undefined) payload.temperature = temperature;
+    if (topP !== undefined) payload.top_p = topP;
+    if (stop !== undefined) payload.stop = stop;
+    if (requestId !== undefined) payload.request_id = requestId;
+    return this._request("/api/v1/open/chat/completions", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
   async openapiSchema() {
     return this._request("/openapi.json");
   }
