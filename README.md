@@ -1,6 +1,6 @@
 # QuantumToken SDK
 
-Official Python & Node.js SDK / examples for [QuantumToken (奇物匣)](https://trade.pianam.cn/landing/) — a developer-first AI capability and open API platform.
+Official Python & Node.js SDK / examples for [QuantumToken (奇物匣)](https://trade.pianam.cn/) — a developer-first AI capability and open API platform.
 
 ## What is QuantumToken?
 
@@ -22,6 +22,8 @@ Get your `X-API-Key` from https://trade.pianam.cn → Apps → Create App.
 ```bash
 pip install requests
 python python/examples/query_balance.py
+python python/examples/chat.py      # AI chat
+python python/examples/extract.py   # web extraction
 ```
 
 ### Node.js
@@ -30,6 +32,8 @@ python python/examples/query_balance.py
 cd node
 npm install
 node examples/query_balance.js
+node examples/chat.js      # AI chat
+node examples/extract.js   # web extraction
 ```
 
 ## Core endpoints
