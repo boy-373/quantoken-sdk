@@ -60,6 +60,31 @@ class QuantumTokenClient {
     });
   }
 
+  /**
+   * POST /api/v1/open/extract - scraper AI extraction.
+   * source: one of { html, text, url }; mode: one of { fields, question }.
+   * fields may be an array, object, or comma string.
+   * Returns { code: 0, data: {...}, remaining: ... }.
+   */
+  async extract({
+    html, text, url, fields, question,
+    model = "qwen-flash",
+    maxTokens = 1024,
+    requestId,
+  } = {}) {
+    const payload = { model, max_tokens: maxTokens };
+    if (html !== undefined) payload.html = html;
+    if (text !== undefined) payload.text = text;
+    if (url !== undefined) payload.url = url;
+    if (fields !== undefined) payload.fields = fields;
+    if (question !== undefined) payload.question = question;
+    if (requestId !== undefined) payload.request_id = requestId;
+    return this._request("/api/v1/open/extract", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
   async openapiSchema() {
     return this._request("/openapi.json");
   }

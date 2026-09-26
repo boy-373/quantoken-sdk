@@ -63,6 +63,40 @@ class QuantumTokenClient:
         r.raise_for_status()
         return r.json()
 
+    def extract(
+        self,
+        html: Optional[str] = None,
+        text: Optional[str] = None,
+        url: Optional[str] = None,
+        fields=None,
+        question: Optional[str] = None,
+        model: str = "qwen-flash",
+        max_tokens: int = 1024,
+        request_id: Optional[str] = None,
+    ) -> dict:
+        """POST /api/v1/open/extract - scraper AI extraction.
+
+        Provide one of html/text/url and one of fields/question.
+        fields may be a list ["title","price"], dict {"price":"digits only"},
+        or comma string. Returns {"code":0,"data":{...},"remaining":...}.
+        """
+        payload: dict = {"model": model, "max_tokens": max_tokens}
+        if html is not None:
+            payload["html"] = html
+        if text is not None:
+            payload["text"] = text
+        if url is not None:
+            payload["url"] = url
+        if fields is not None:
+            payload["fields"] = fields
+        if question is not None:
+            payload["question"] = question
+        if request_id is not None:
+            payload["request_id"] = request_id
+        r = self.session.post(self._url("/api/v1/open/extract"), json=payload)
+        r.raise_for_status()
+        return r.json()
+
     def openapi_schema(self) -> dict:
         """Fetch the OpenAPI 3.1 schema."""
         r = self.session.get(self._url("/openapi.json"))

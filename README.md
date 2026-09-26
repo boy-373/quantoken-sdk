@@ -39,6 +39,7 @@ node examples/query_balance.js
 | `/api/v1/open/quota` | GET | `X-API-Key` | Query remaining credits |
 | `/api/v1/open/quota/consume` | POST | `X-API-Key` | Deduct credits once |
 | `/api/v1/open/chat/completions` | POST | `X-API-Key` | **AI chat (OpenAI compatible)** |
+| `/api/v1/open/extract` | POST | `X-API-Key` | **Scraper AI extraction** |
 
 ## AI chat (OpenAI compatible)
 
@@ -68,6 +69,30 @@ resp = client.chat.completions.create(
 
 Model tiers (credits/call): `qwen-flash` = 1, `qwen-turbo` = 2, `qwen-plus` = 5.
 Credits are pre-charged and auto-refunded if the upstream call fails; `request_id` provides idempotent retries. Streaming is not supported yet.
+
+## Scraper AI extraction
+
+Turn a scraped page into clean structured JSON. The API strips scripts/styles/navigation, then extracts exactly the fields you ask for:
+
+```python
+from quantoken import QuantumTokenClient
+
+client = QuantumTokenClient(api_key="YOUR_KEY")
+
+# from raw HTML (or pass url= / text=)
+resp = client.extract(
+    html="<html>...scraped page...</html>",
+    fields={"title": "product name", "price": "price, digits only", "sku": "item code"},
+)
+print(resp["data"])        # {"title": ..., "price": ..., "sku": ...}
+print(resp["remaining"])   # credits left
+
+# or ask a question about the page
+resp = client.extract(url="https://example.com", question="What is this page about?")
+print(resp["data"]["answer"])
+```
+
+`fields` accepts a list (`["title","price"]`), object (`{"price":"digits only"}`), or comma string; values may come back as arrays. Missing fields return `null`. Billed at the same model tiers as chat, with pre-charge and auto-refund on failure.
 
 ## Usage example
 
